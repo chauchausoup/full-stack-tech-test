@@ -1,0 +1,21 @@
+name: Set up dependencies
+description: Set up Node.js and install package dependencies.
+
+runs:
+  using: composite
+
+  steps:
+    - name: Set up PNPM
+      uses: pnpm/action-setup@v2
+      with:
+        version: 7
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        cache: pnpm
+        node-version-file: .nvmrc
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+      shell: bash

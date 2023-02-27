@@ -1,94 +1,91 @@
+# DNPL Technical Test
 
+DNPL is a platform for helping users pay off their debts. Your challenge is to create a solve a small portion of this problem by taking this barebones repository and creating the following:
 
-# FullStackTechTest
+- A NestJS REST api that can store a read, create, update and delete from a list of creditors for a user
 
-This project was generated using [Nx](https://nx.dev).
+  - A creditor should have the following information.
+    - id
+    - name
+    - address
+    - email
+    - phone
+  - A user should have the following information
+    - id,
+    - first_name
+    - last_name
+    - email
+  - You should also be able to store the amount_owed to a creditor for each user
+  - Suggested libraries you should consider include [TypeORM](https://typeorm.io/) and [NestJS Swagger](https://docs.nestjs.com/openapi/introduction)
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
+- A NextJS application that can select a user from a dropdown and then see a list of their creditors including amount_owed to each
+  - The frontend doesn't need to be pretty but should be easy to use
+  - Please use Tailwind CSS for styling
+  - Other suggested libraries include [Tanstack React Query](https://tanstack.com/query/latest) and [React Hook Form](https://react-hook-form.com/)
 
-🔎 **Smart, Fast and Extensible Build System**
+#### Things to consider
 
-## Adding capabilities to your workspace
+- No login or authentication required
+- Unit and Integration tests are recommended for core business logic
+- You can use any additional libraries or tools you like but be prepared to explain your choices in your interview
+- Your api should have some documentation, NestJS swagger recommended
+- You can use any database you like but we recommend sqlite so it's easy to include your DB in your repo and you can skip adding migrations
+- Your finished solution should contain a readme with instructions for easy setup
+- You may store any secrets directly in your repository (even though you wouldn't do this in production)
+- All unit and e2e tests should pass on your completed solution
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+## Installation
 
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
+### Fork the repository
 
-Below are our core plugins:
+Please first fork this repository to your own GitHub account and then check it out like below but with your own details.
 
-- [React](https://reactjs.org)
-  - `npm install --save-dev @nrwl/react`
-- Web (no framework frontends)
-  - `npm install --save-dev @nrwl/web`
-- [Angular](https://angular.io)
-  - `npm install --save-dev @nrwl/angular`
-- [Nest](https://nestjs.com)
-  - `npm install --save-dev @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `npm install --save-dev @nrwl/express`
-- [Node](https://nodejs.org)
-  - `npm install --save-dev @nrwl/node`
+```bash
+git clone git@github.com:dnplco/full-stack-tech-test.git
+```
 
-There are also many [community plugins](https://nx.dev/community) you could add.
+### Install dependencies
 
-## Generate an application
+```bash
+pnpm install
+```
 
-Run `nx g @nrwl/react:app my-app` to generate an application.
+### Setup environment variables
 
-> You can use any of the plugins above to generate applications as well.
+```bash
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env.local
+```
 
-When using Nx, you can create multiple applications and libraries in the same workspace.
+## Usage
 
-## Generate a library
+### Starting the platform
 
-Run `nx g @nrwl/react:lib my-lib` to generate a library.
+```bash
+pnpm run start
+```
 
-> You can also use any of the plugins above to generate libraries as well.
+While running the api will be available at `http://localhost:3333`
+While running the website will be available at `http://localhost:3000`
 
-Libraries are shareable across libraries and applications. They can be imported from `@full-stack-tech-test/mylib`.
+### Testing the platform
 
-## Development server
+```bash
+# Unit Tests
+pnpm nx test
 
-Run `nx serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
+# Integration Tests
+pnpm nx e2e
+```
 
-## Code scaffolding
+### Building the platform
 
-Run `nx g @nrwl/react:component my-component --project=my-app` to generate a new component.
+```bash
+pnpm nx build
+```
 
-## Build
+### Linting the platform
 
-Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `nx test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `nx e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev) to learn more.
-
-
-
-## ☁ Nx Cloud
-
-### Distributed Computation Caching & Distributed Task Execution
-
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
-
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
-
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
-
-Visit [Nx Cloud](https://nx.app/) to learn more.
+```bash
+pnpm nx lint
+```

@@ -1,18 +1,36 @@
-import Head from 'next/head';
+import { useState } from 'react';
+import useSWR from 'swr';
+
+import UserDropdown from '../components/UserDropdown';
+import CreditorsTable from '../components/CreditorsTable';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorDisplay from '../components/ErrorDisplay';
+
+import { getUsers } from '../utils/api';
 
 export default function Home() {
+  const [selectedUser, setSelectedUser] = useState(null);
+  const { data, error } = useSWR(
+    selectedUser ? `/users/${selectedUser.id}/creditors` : null,
+    getUsers
+  );
+
+  const handleUserSelected = (user) => {
+    setSelectedUser(user);
+  };
+
+  if (error) {
+    return <ErrorDisplay message="Failed to load data" />;
+  }
+
+  if (!data) {
+    return <LoadingSpinner />;
+  }
+
   return (
-    <>
-      <Head>
-        <title>DNPL | Technical Test</title>
-        <meta
-          name="description"
-          content="Say goodbye to debt and hello to financial freedom with Dnpl – the all-in-one debt management solution."
-        />
-      </Head>
-      <div className="h-screen w-full bg-gray-900">
-        <h1 className="text-white">Homepage</h1>
-      </div>
-    </>
+    <div>
+      <UserDropdown onUserSelected={handleUserSelected} />
+      {selectedUser && <CreditorsTable creditors={data} />}
+    </div>
   );
 }

@@ -32,7 +32,7 @@ export default function Home() {
     <div>
       <CreateUserForm />
       <UserDropdown onUserSelected={handleUserSelected} />
-      {selectedUser && <CreditorsTable creditors={data} />}
+      {<CreditorsTable creditors={data} />}
     </div>
   );
 }

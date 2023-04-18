@@ -1,4 +1,5 @@
 import axios from 'axios';
+import mockData from './mock';
 
 const api = axios.create({
   baseURL: 'http://localhost:3333',
@@ -6,8 +7,9 @@ const api = axios.create({
 
 export const getUsers = async () => {
   try {
-    const response = await api.get('/users');
-    return response.data || {};
+    // const response = await api.get('/users');
+    // return response.data;
+    return mockData.mockDataUsers;
   } catch (error) {
     console.error(error);
   }
@@ -15,8 +17,9 @@ export const getUsers = async () => {
 
 export const getUserCreditors = async (userId) => {
   try {
-    const response = await api.get(`/users/${userId}/creditors`);
-    return response.data;
+    // const response = await api.get(`/users/${userId}/creditors`);
+    // return response.data;
+    return mockData.mockDataCreditors;
   } catch (error) {
     console.error(error);
   }

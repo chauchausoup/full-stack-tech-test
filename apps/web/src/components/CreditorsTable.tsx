@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { getUserCreditors } from '../utils/api';
 
 interface Props {
@@ -7,21 +7,38 @@ interface Props {
 }
 
 const CreditorsTable: FunctionComponent<Props> = ({ selectedUserId }) => {
-  const {
-    data: credits,
-    isLoading,
-    error,
-  } = useQuery(['credits', selectedUserId], () =>
-    getUserCreditors(selectedUserId)
-  );
+  // const {
+  //   data: credits,
+  //   isLoading,
+  //   error,
+  // } = useQuery(['credits', selectedUserId], () =>
+  //   getUserCreditors(selectedUserId)
+  // );
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
 
-  if (error) {
-    return <div>Error loading creditors.</div>;
-  }
+  // if (error) {
+  //   return <div>Error loading creditors.</div>;
+  // }
+
+  const [credits, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // const response = await api.get('/users');
+        // const data = response.data;
+        const data = await getUserCreditors(); // Call the getUsers function
+        setUsers(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <table>

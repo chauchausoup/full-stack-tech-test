@@ -28,18 +28,21 @@ const mockDataCreditors = [
     name: 'Creditor 1',
     email: 'creditor1@example.com',
     phone: '123-456-7890',
+    address: 'abc',
   },
   {
     id: 2,
     name: 'Creditor 2',
     email: 'creditor2@example.com',
     phone: '987-654-3210',
+    address: 'abc',
   },
   {
     id: 3,
     name: 'Creditor 3',
     email: 'creditor3@example.com',
     phone: '555-123-4567',
+    address: 'abc',
   },
 ];
 

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Creditor } from './entities/creditor/creditor';
+import { User } from '../user/entities/user/user';
 import { CreateCreditorDto } from './dto/create-creditor.dto';
 import { UpdateCreditorDto } from './dto/update-creditor.dto';
 
@@ -9,7 +10,10 @@ import { UpdateCreditorDto } from './dto/update-creditor.dto';
 export class CreditorService {
   constructor(
     @InjectRepository(Creditor)
-    private readonly creditorRepository: Repository<Creditor>
+    private readonly creditorRepository: Repository<Creditor>,
+
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
   ) {}
 
   async create(createCreditorDto: CreateCreditorDto): Promise<Creditor> {
@@ -22,7 +26,7 @@ export class CreditorService {
   }
 
   async findOne(id: number): Promise<Creditor> {
-    const creditor = await this.creditorRepository.findOne(id);
+    const creditor = await this.creditorRepository.findOneBy({ id: id });
     if (!creditor) {
       throw new NotFoundException(`Creditor with ID ${id} not found`);
     }
@@ -41,5 +45,15 @@ export class CreditorService {
   async remove(id: number): Promise<void> {
     const creditor = await this.findOne(id);
     await this.creditorRepository.remove(creditor);
+  }
+
+  async getCreditorsByUserId(userId: number): Promise<Creditor[]> {
+    const creditors = await this.creditorRepository
+      .createQueryBuilder('creditor')
+      .innerJoinAndSelect('creditor.user', 'user')
+      .where('user.id = :userId', { userId })
+      .getMany();
+
+    return creditors;
   }
 }

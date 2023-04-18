@@ -17,10 +17,4 @@ export class Creditor {
 
   @Column()
   phone: string;
-
-  @Column({ default: 0 })
-  amountOwed: number;
-
-  @ManyToOne(() => User, (user) => user.creditors)
-  user: User;
 }

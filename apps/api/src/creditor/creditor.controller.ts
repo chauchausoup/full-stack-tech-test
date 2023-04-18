@@ -27,20 +27,20 @@ export class CreditorController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Creditor> {
+  findOne(@Param('id') id: number): Promise<Creditor> {
     return this.creditorService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateCreditorDto: UpdateCreditorDto
   ): Promise<Creditor> {
     return this.creditorService.update(id, updateCreditorDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
+  remove(@Param('id') id: number): Promise<void> {
     return this.creditorService.remove(id);
   }
 }

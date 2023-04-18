@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsNotEmpty } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, isNumber } from 'class-validator';
 
 export class CreateCreditorDto {
   @IsString()
@@ -16,7 +16,4 @@ export class CreateCreditorDto {
   @IsString()
   @IsNotEmpty()
   phone: string;
-
-  @IsNotEmpty()
-  amountOwed: number;
 }

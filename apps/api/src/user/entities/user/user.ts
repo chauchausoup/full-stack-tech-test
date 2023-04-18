@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { Creditor } from '../../../creditor/entities/creditor/creditor';
 
 @Entity()
@@ -16,11 +22,6 @@ export class User {
   email: string;
 
   @OneToMany(() => Creditor, (creditor) => creditor.user)
+  @JoinColumn()
   creditors: Creditor[];
-
-  constructor(first_name: string, last_name: string, email: string) {
-    this.first_name = first_name;
-    this.last_name = last_name;
-    this.email = email;
-  }
 }

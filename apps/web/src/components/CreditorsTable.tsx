@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+// import { useQuery } from 'react-query';
 import { FunctionComponent, useEffect, useState } from 'react';
 import { getUserCreditors } from '../utils/api';
 
@@ -58,7 +58,7 @@ const CreditorsTable: FunctionComponent<Props> = ({ selectedUserId }) => {
             <td>{credit.address}</td>
             <td>{credit.email}</td>
             <td>{credit.phone}</td>
-            <td>{credit.amountOwned}</td>
+            <td>{credit.amount}</td>
           </tr>
         ))}
       </tbody>

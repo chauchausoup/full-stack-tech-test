@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Creditor } from './entities/creditor/creditor';
 import { CreditorController } from './creditor.controller';
 import { CreditorService } from './creditor.service';
+import { User } from '../user/entities/user/user';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Creditor])],
+  imports: [TypeOrmModule.forFeature([Creditor, User])],
   controllers: [CreditorController],
   providers: [CreditorService],
 })

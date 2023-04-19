@@ -2,10 +2,12 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
   OneToMany,
-  JoinColumn,
 } from 'typeorm';
 import { Creditor } from '../../../creditor/entities/creditor/creditor';
+import { UserCreditor } from '../../../user-creditor/user-creditor.entity';
 
 @Entity()
 export class User {
@@ -21,7 +23,12 @@ export class User {
   @Column()
   email: string;
 
-  @OneToMany(() => Creditor, (creditor) => creditor.user)
-  @JoinColumn()
+  // Define many-to-many relationship with Creditor entity through UserCreditor entity
+  @ManyToMany(() => Creditor, (creditor) => creditor.users, { cascade: true })
+  @JoinTable()
   creditors: Creditor[];
+
+  // Define one-to-many relationship with UserCreditor entity
+  @OneToMany(() => UserCreditor, (userCreditor) => userCreditor.user)
+  userCreditors: UserCreditor[];
 }

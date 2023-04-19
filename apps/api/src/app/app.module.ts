@@ -4,6 +4,7 @@ import { UserModule } from '../user/user.module';
 import { CreditorModule } from '../creditor/creditor.module';
 import { User } from '../user/entities/user/user';
 import { Creditor } from '../creditor/entities/creditor/creditor';
+import { UserCreditorModule } from '../user-creditor/user-creditor.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { Creditor } from '../creditor/entities/creditor/creditor';
     }),
     UserModule,
     CreditorModule,
+    UserCreditorModule,
   ],
 })
 export class AppModule {}

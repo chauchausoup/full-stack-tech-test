@@ -11,6 +11,8 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user/user';
+import { CreateCreditorDto } from '../creditor/dto/create-creditor.dto';
+import { Creditor } from '../creditor/entities/creditor/creditor';
 
 @Controller('users')
 export class UserController {
@@ -42,5 +44,14 @@ export class UserController {
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     return this.userService.delete(id);
+  }
+
+  @Post(':id/creditors')
+  async addUserCreditor(
+    @Param('id') id: number,
+    @Body() createCreditorDto: CreateCreditorDto
+  ): Promise<void> {
+    // Call the addUserCreditor method in the UserService
+    await this.userService.createCreditorForUser(id, createCreditorDto);
   }
 }

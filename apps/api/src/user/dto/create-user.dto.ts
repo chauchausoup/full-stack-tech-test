@@ -1,6 +1,8 @@
+import { CreateCreditorDto } from '../../creditor/dto/create-creditor.dto';
+
 export class CreateUserDto {
-  readonly firstName: string;
-  readonly lastName: string;
-  readonly email: string;
-  readonly amountOwed: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  creditors: CreateCreditorDto[];
 }

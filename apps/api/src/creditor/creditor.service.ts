@@ -46,14 +46,4 @@ export class CreditorService {
     const creditor = await this.findOne(id);
     await this.creditorRepository.remove(creditor);
   }
-
-  async getCreditorsByUserId(userId: number): Promise<Creditor[]> {
-    const creditors = await this.creditorRepository
-      .createQueryBuilder('creditor')
-      .innerJoinAndSelect('creditor.user', 'user')
-      .where('user.id = :userId', { userId })
-      .getMany();
-
-    return creditors;
-  }
 }

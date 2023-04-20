@@ -18,7 +18,7 @@ export class Creditor {
   @Column()
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   amount_owned: number;
 
   @ManyToOne(() => User, (user) => user.creditors)

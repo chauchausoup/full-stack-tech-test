@@ -1,38 +1,24 @@
-import { useState } from 'react';
-import useSWR from 'swr';
-
 import UserDropdown from '../components/UserDropdown';
 import CreditorsTable from '../components/CreditorsTable';
-// import LoadingSpinner from '../components/LoadingSpinner';
-import ErrorDisplay from '../components/ErrorDisplay';
 
-import { getUsers } from '../utils/api';
 import CreateUserForm from '../components/CreateUserForm';
+import CreateCreditorForm from '../components/CreateCreditorForm';
 
 export default function Home() {
-  const [selectedUser, setSelectedUser] = useState(null);
-  const { data, error } = useSWR(
-    selectedUser ? `/users/${selectedUser.id}/creditors` : null,
-    getUsers
-  );
-
-  const handleUserSelected = (user) => {
-    setSelectedUser(user);
-  };
-
-  if (error) {
-    return <ErrorDisplay message="Failed to load data" />;
-  }
-
-  // if (!data) {
-  //   return <LoadingSpinner />;
-  // }
+  const creditors = [
+    { id: 1, name: 'Creditor 1', amount_owned: '$100' },
+    { id: 2, name: 'Creditor 2', amount_owned: '$200' },
+    { id: 3, name: 'Creditor 3', amount_owned: '$300' },
+  ];
 
   return (
-    <div>
-      <CreateUserForm />
-      <UserDropdown onUserSelected={handleUserSelected} />
-      {<CreditorsTable creditors={data} />}
-    </div>
+    <>
+      <div className="flex">
+        <CreateUserForm />
+        <CreateCreditorForm />
+        <UserDropdown />
+      </div>
+      <CreditorsTable creditors={creditors} />
+    </>
   );
 }

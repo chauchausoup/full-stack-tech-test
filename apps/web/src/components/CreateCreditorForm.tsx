@@ -1,20 +1,20 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
-interface CreateUserFormData {
+interface FormData {
   firstName: string;
   lastName: string;
   email: string;
 }
 
-const CreateUserForm: React.FC = () => {
+const CreateCreditorForm: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateUserFormData>();
+  } = useForm<FormData>();
 
-  const onSubmit = (data: CreateUserFormData) => {
+  const onSubmit = (data: FormData) => {
     // Handle form submission
     console.log(data);
   };
@@ -22,7 +22,7 @@ const CreateUserForm: React.FC = () => {
   return (
     <div className="flex">
       <div className="bg-white w-96 h-96 p-8 rounded-md shadow-md">
-        <h1 className="text-2xl font-bold mb-4">Create User</h1>
+        <h1 className="text-2xl font-bold mb-4">Create Creditor</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
             <label
@@ -92,7 +92,7 @@ const CreateUserForm: React.FC = () => {
               type="submit"
               className="w-full bg-indigo-600 py-2 px-4 border border-transparent rounded-md text-white font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              Create User
+              Create Creditor
             </button>
           </div>
         </form>
@@ -101,4 +101,4 @@ const CreateUserForm: React.FC = () => {
   );
 };
 
-export default CreateUserForm;
+export default CreateCreditorForm;

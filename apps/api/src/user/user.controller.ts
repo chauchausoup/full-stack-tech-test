@@ -1,57 +1,56 @@
 import {
   Controller,
-  Get,
   Post,
+  Get,
   Put,
-  Delete,
   Param,
   Body,
+  HttpStatus,
 } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user/user';
-import { CreateCreditorDto } from '../creditor/dto/create-creditor.dto';
-import { Creditor } from '../creditor/entities/creditor/creditor';
+import { User } from '../entity/user.entity';
+import { CreateUserDto } from '../dto/create-user.dto';
+import {
+  UserCreditorDto,
+  UserWithCreditorsDto,
+} from 'src/dto/user-with-creditors.dto';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  async findAll(): Promise<User[]> {
-    return this.userService.findAll();
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: number): Promise<User> {
-    return this.userService.findById(id);
-  }
-
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.create(createUserDto);
+  @ApiOperation({ summary: 'Create a new user' })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ status: HttpStatus.CREATED, type: User })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Email address already exists',
+  })
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.userService.createUser(createUserDto);
   }
 
-  @Put(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() updateUserDto: UpdateUserDto
-  ): Promise<User> {
-    return this.userService.update(id, updateUserDto);
+  @Get()
+  @ApiOperation({ summary: 'Get uers' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of users',
+    type: User,
+    isArray: true,
+  })
+  getUsers(): Promise<User[]> {
+    return this.userService.getUsers();
   }
 
-  @Delete(':id')
-  async delete(@Param('id') id: number): Promise<void> {
-    return this.userService.delete(id);
-  }
-
-  @Post(':id/creditors')
-  async addUserCreditor(
-    @Param('id') id: number,
-    @Body() createCreditorDto: CreateCreditorDto
-  ): Promise<void> {
-    // Call the addUserCreditor method in the UserService
-    await this.userService.createCreditorForUser(id, createCreditorDto);
+  @Put(':id/creditor')
+  async updateUserCreditors(
+    @Param('id') userId: number,
+    @Body()
+    userCreditorDto: UserCreditorDto
+  ): Promise<UserWithCreditorsDto> {
+    return this.userService.updateUserCreditors(userId, userCreditorDto);
   }
 }

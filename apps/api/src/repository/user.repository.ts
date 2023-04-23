@@ -1,7 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { User } from './entities/user/user';
+import { User } from '../entity/user.entity';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  // Custom methods specific to User entity can be defined here
+  // Custom repository methods for user entity
 }

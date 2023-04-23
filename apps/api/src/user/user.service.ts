@@ -1,105 +1,226 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './entities/user/user';
-import { Creditor } from '../creditor/entities/creditor/creditor';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateCreditorDto } from '../creditor/dto/create-creditor.dto';
+import { User } from '../entity/user.entity';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UserCreditor } from 'src/entity/user-creditor.entity';
+import { Creditor } from 'src/entity/creditor.entity';
+import {
+  CreditorDto,
+  UserCreditorDto,
+  UserWithCreditorsDto,
+} from 'src/dto/user-with-creditors.dto';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-
+    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(UserCreditor)
+    private userCreditorRepository: Repository<UserCreditor>,
     @InjectRepository(Creditor)
-    private readonly creditorRepository: Repository<Creditor>
+    private creditorRepository: Repository<Creditor>
   ) {}
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    const { first_name, last_name, email } = createUserDto;
+
+    // Check if user with the same email already exists
+    const existingUser = await this.userRepository.findOneBy({ email });
+    if (existingUser) {
+      throw new ConflictException('Email address already exists');
+    }
+
+    // Create a new user entity
+    const newUser = new User();
+    newUser.first_name = first_name;
+    newUser.last_name = last_name;
+    newUser.email = email;
+
+    // Save the new user entity to the database
+    return this.userRepository.save(newUser);
   }
 
-  async findById(id: number): Promise<User> {
-    return this.userRepository.findOneBy({ id: id });
+  async getUsers(): Promise<User[]> {
+    return this.userRepository.find({
+      relations: ['userCreditors'],
+    });
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.userRepository.create(createUserDto);
-    const savedUser = await this.userRepository.save(user); // Save the user to the database and get the saved user object
+  async getUsersWithCreditors(): Promise<UserWithCreditorsDto[]> {
+    const users = await this.userRepository.find({
+      relations: ['userCreditors', 'userCreditors.creditor'],
+    });
 
-    console.log(savedUser, 'user'); // Log the saved user object
+    console.log(users, 'userssss');
 
-    // Loop through the creditors array and save each creditor to the database
-    for (const creditor of savedUser.creditors) {
-      console.log(creditor, 'creditor'); // Log the creditor object
+    const userWithCreditorsDtoArray: UserWithCreditorsDto[] = [];
 
-      const cid = creditor.id;
-      const existingCreditor = await this.creditorRepository.findOneBy({
-        id: cid,
-      });
+    for (const user of users) {
+      const userWithCreditorsDto = new UserWithCreditorsDto();
+      userWithCreditorsDto.id = user.id;
+      userWithCreditorsDto.first_name = user.first_name;
+      userWithCreditorsDto.last_name = user.last_name;
+      userWithCreditorsDto.email = user.email;
 
-      if (!existingCreditor) {
-        await this.creditorRepository.save(creditor);
+      const userCreditorsDtoArray: UserCreditorDto[] = [];
+
+      for (const userCreditor of user.userCreditors) {
+        const creditorDto = new CreditorDto();
+        creditorDto.id = userCreditor.creditor.id;
+        creditorDto.name = userCreditor.creditor.name;
+        creditorDto.address = userCreditor.creditor.address;
+        creditorDto.email = userCreditor.creditor.email;
+        creditorDto.phone = userCreditor.creditor.phone;
+
+        const userCreditorDto = new UserCreditorDto();
+        userCreditorDto.creditor = creditorDto;
+        userCreditorDto.amount_owned = userCreditor.amount_owned;
+        userCreditorDto.id = userCreditor.id;
+
+        userCreditorsDtoArray.push(userCreditorDto);
       }
 
-      console.log(existingCreditor, 'existingCreditor');
+      userWithCreditorsDto.userCreditors = userCreditorsDtoArray;
+      userWithCreditorsDtoArray.push(userWithCreditorsDto);
     }
 
-    return savedUser;
+    return userWithCreditorsDtoArray;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    await this.userRepository.update(id, updateUserDto);
-    return this.findById(id);
-  }
+  // async updateUserCreditors(
+  //   userId: number,
+  //   userWithCreditorsDto: UserWithCreditorsDto,
+  // ): Promise<UserWithCreditorsDto> {
+  //   // Find the user by userId with relations
+  //   const user = await this.userRepository
+  //     .createQueryBuilder('user')
+  //     .leftJoinAndSelect('user.userCreditors', 'userCreditors')
+  //     .leftJoinAndSelect('userCreditors.creditor', 'creditor')
+  //     .where('user.id = :userId', { userId })
+  //     .getOne();
 
-  async delete(id: number): Promise<void> {
-    await this.userRepository.delete(id);
-  }
+  //   // Update user-creditor relationships
+  //   const updatedUserCreditors = await Promise.all(
+  //     userWithCreditorsDto.userCreditors.map(
+  //       async (userCreditorDto: UserCreditorDto) => {
+  //         let userCreditor = user.userCreditors.find(
+  //           (uc) => uc.creditor.id === userCreditorDto.creditor.id,
+  //         );
+  //         if (!userCreditor) {
+  //           userCreditor = new UserCreditor();
+  //           userCreditor.user = user;
+  //           userCreditor.creditor = Object.assign(
+  //             new Creditor(),
+  //             userCreditorDto.creditor,
+  //           );
+  //         }
+  //         userCreditor.amount_owned = userCreditorDto.amount_owned;
+  //         return await this.userCreditorRepository.save(userCreditor);
+  //       },
+  //     ),
+  //   );
 
-  //createCreditor
+  //   user.userCreditors = updatedUserCreditors;
 
-  async createCreditorForUser(
-    id: number,
-    createCreditorDto: CreateCreditorDto
-  ): Promise<void> {
-    // Find the user by ID
-    const user = await this.userRepository.findOneBy({ id });
+  //   // Save updated user
+  //   const updatedUser = await this.userRepository.save(user);
 
-    console.log(user, 'us');
+  //   // Return updated user with creditors
+  //   return {
+  //     id: updatedUser.id,
+  //     first_name: updatedUser.first_name,
+  //     last_name: updatedUser.last_name,
+  //     email: updatedUser.email,
+  //     userCreditors: updatedUser.userCreditors.map((uc) => ({
+  //       id: uc.id,
+  //       creditor: {
+  //         id: uc.creditor.id,
+  //         name: uc.creditor.name,
+  //         address: uc.creditor.address,
+  //         email: uc.creditor.email,
+  //         phone: uc.creditor.phone,
+  //       },
+  //       amount_owned: uc.amount_owned,
+  //     })),
+  //   };
+  // }
+
+  async updateUserCreditors(
+    userId: number,
+    userCreditorDto: UserCreditorDto
+  ): Promise<User> {
+    const { id, creditor, amount_owned } = userCreditorDto;
+
+    console.log(userCreditorDto, 'user creditor');
+    console.log({ id, creditor, amount_owned }, 'damm');
+
+    // Verify that userCreditors array is not empty
+    // Fetch the existing user from the database
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.userCreditors', 'userCreditors')
+      .where('user.id = :userId', { userId })
+      .getOne();
 
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      // Handle case when user is not found
+      throw new Error(`User with ID ${userId} not found`);
     }
 
-    // Create a new creditor entity and set its properties
-    const creditor = new Creditor();
-    creditor.name = createCreditorDto.name;
-    creditor.address = createCreditorDto.address;
-    creditor.email = createCreditorDto.email;
-    creditor.phone = createCreditorDto.phone;
-    creditor.amount_owned = createCreditorDto.amount_owned;
-    creditor.user = user;
+    console.log(user, 'incoming user');
+    // Find the user-creditor relationship to be updated
 
-    console.log(creditor, 'red');
+    const newCreditor = new UserCreditor();
+    newCreditor.id = id;
+    newCreditor.creditor = { ...creditor };
+    newCreditor.amount_owned = amount_owned;
 
-    // Save the new creditor to the database
-    await this.creditorRepository.save(creditor);
+    console.log(newCreditor, 'damm newly creditor');
 
-    if (!user.creditors) {
-      user.creditors = [];
-    }
+    this.userCreditorRepository.save({
+      id,
+      creditor,
+      amount_owned,
+    });
 
-    if (user.creditors.length === 0) {
-      user.creditors = [];
-    }
+    await this.userRepository
+      .createQueryBuilder('user')
+      .relation(User, 'userCreditors')
+      .of(userId)
+      .add(newCreditor);
 
-    // Push the new creditor to the user's creditors array
-    user.creditors.push(creditor);
+    user.userCreditors.push(newCreditor);
 
-    // Save the updated user to the database
+    // Save the updated User entity
     await this.userRepository.save(user);
+
+    const userCreditor = await this.userCreditorRepository.find();
+
+    console.log(userCreditor, 'newly user creditor');
+    // const u = await this.userCreditorRepository.find();
+    // console.log(u, 'all');
+    // console.log(newCreditor, 'new creditor');
+
+    const updatedUser = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.userCreditors', 'userCreditors')
+      .where('user.id = :userId', { userId })
+      .getOne();
+
+    console.log(updatedUser, 'updated user');
+
+    return updatedUser;
   }
 }
+
+// {
+//   "id": 1,
+//   "creditor": {
+//     "id": 1,
+//     "name": "string",
+//     "address": "string",
+//     "email": "string@asd.com",
+//     "phone": "123"
+//   },
+//   "amount_owned": 555
+// }

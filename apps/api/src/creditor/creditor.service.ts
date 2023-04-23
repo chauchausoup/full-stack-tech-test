@@ -1,49 +1,29 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Creditor } from './entities/creditor/creditor';
-import { User } from '../user/entities/user/user';
-import { CreateCreditorDto } from './dto/create-creditor.dto';
-import { UpdateCreditorDto } from './dto/update-creditor.dto';
+import { CreateCreditorDto } from '../dto/create-creditor.dto';
+import { Creditor } from '../entity/creditor.entity';
 
 @Injectable()
 export class CreditorService {
   constructor(
     @InjectRepository(Creditor)
-    private readonly creditorRepository: Repository<Creditor>,
-
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly creditorRepository: Repository<Creditor>
   ) {}
 
-  async create(createCreditorDto: CreateCreditorDto): Promise<Creditor> {
-    const creditor = this.creditorRepository.create(createCreditorDto);
+  async createCreditor(
+    createCreditorDto: CreateCreditorDto
+  ): Promise<Creditor> {
+    const creditor = new Creditor();
+    creditor.name = createCreditorDto.name;
+    creditor.email = createCreditorDto.email;
+    creditor.address = createCreditorDto.address;
+    creditor.phone = createCreditorDto.phone;
+
     return this.creditorRepository.save(creditor);
   }
 
-  async findAll(): Promise<Creditor[]> {
+  async getCreditors(): Promise<Creditor[]> {
     return this.creditorRepository.find();
-  }
-
-  async findOne(id: number): Promise<Creditor> {
-    const creditor = await this.creditorRepository.findOneBy({ id: id });
-    if (!creditor) {
-      throw new NotFoundException(`Creditor with ID ${id} not found`);
-    }
-    return creditor;
-  }
-
-  async update(
-    id: number,
-    updateCreditorDto: UpdateCreditorDto
-  ): Promise<Creditor> {
-    const creditor = await this.findOne(id);
-    const updatedCreditor = Object.assign(creditor, updateCreditorDto);
-    return this.creditorRepository.save(updatedCreditor);
-  }
-
-  async remove(id: number): Promise<void> {
-    const creditor = await this.findOne(id);
-    await this.creditorRepository.remove(creditor);
   }
 }

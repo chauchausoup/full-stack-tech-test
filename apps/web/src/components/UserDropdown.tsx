@@ -10,11 +10,9 @@ const UserDropdown = () => {
   const creditors = myState.hyperCreditors; // Mock creditor data
 
   const handleUserSelect = (userId) => {
-    console.log(myState, 'my stat in the compo');
     const user = myState.usersWithCreditors.find((user) => user.id === userId);
     setSelectedUser(user);
     setCreditorData([]); // Reset creditor data when user is changed
-    console.log(user.userCreditors, 'RSDSDSDSDSD');
 
     setMyState((prevState) => ({
       ...prevState,
@@ -44,25 +42,6 @@ const UserDropdown = () => {
       setCreditorData((prevCreditorData) => [...prevCreditorData, newCreditor]);
     }
   };
-
-  const handleFormCompletion = () => {
-    console.log('Form completed:', creditorData, selectedUser);
-
-    setSelectedUser(null);
-    setCreditorData([]);
-  };
-
-  // {
-  // 	"id": 1,
-  // 		"creditor": {
-  // 		"id": 1,
-  // 			"name": "string",
-  // 				"address": "string",
-  // 					"email": "string@asd.com",
-  // 						"phone": "123"
-  // 	},
-  // 	"amount_owned": 555
-  // }
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();

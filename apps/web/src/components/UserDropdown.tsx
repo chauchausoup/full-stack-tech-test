@@ -1,40 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+
+import { MyContext } from '../context/AppContext';
 
 const UserDropdown = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [creditorData, setCreditorData] = useState([]);
 
-  const users = [
-    {
-      id: 1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@example.com',
-    },
-    {
-      id: 2,
-      firstName: 'Jane',
-      lastName: 'Doe',
-      email: 'jane.doe@example.com',
-    },
-    {
-      id: 3,
-      firstName: 'Mark',
-      lastName: 'Smith',
-      email: 'mark.smith@example.com',
-    },
-  ]; // Mock user data
+  const { myState, setMyState } = useContext(MyContext);
 
-  const creditors = [
-    { id: 1, name: 'Creditor 1' },
-    { id: 2, name: 'Creditor 2' },
-    { id: 3, name: 'Creditor 3' },
-  ]; // Mock creditor data
+  const creditors = myState.hyperCreditors; // Mock creditor data
 
   const handleUserSelect = (userId) => {
-    const user = users.find((user) => user.id === userId);
+    console.log(myState, 'my stat in the compo');
+    const user = myState.usersWithCreditors.find((user) => user.id === userId);
     setSelectedUser(user);
     setCreditorData([]); // Reset creditor data when user is changed
+    console.log(user.userCreditors, 'RSDSDSDSDSD');
+
+    setMyState((prevState) => ({
+      ...prevState,
+      creditors: user.userCreditors,
+    }));
   };
 
   const handleCreditorSelect = (creditorId, amountOwned) => {
@@ -74,9 +60,9 @@ const UserDropdown = () => {
         onChange={(e) => handleUserSelect(parseInt(e.target.value))}
       >
         <option value="">Select a User</option>
-        {users.map((user) => (
+        {myState.usersWithCreditors.map((user) => (
           <option key={user.id} value={user.id}>
-            {user.firstName} {user.lastName}
+            {user.first_name} {user.last_name}
           </option>
         ))}
       </select>
@@ -88,7 +74,7 @@ const UserDropdown = () => {
             onChange={(e) => handleCreditorSelect(parseInt(e.target.value), 0)}
           >
             <option value="">Select a Creditor</option>
-            {creditors.map((creditor) => (
+            {myState.hyperCreditors.map((creditor) => (
               <option key={creditor.id} value={creditor.id}>
                 {creditor.name}
               </option>

@@ -1,10 +1,12 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useMutation } from 'react-query';
 
 interface FormData {
-  firstName: string;
-  lastName: string;
+  name: string;
+  address: string;
   email: string;
+  phone: string;
 }
 
 const CreateCreditorForm: React.FC = () => {
@@ -14,11 +16,28 @@ const CreateCreditorForm: React.FC = () => {
     formState: { errors },
   } = useForm<FormData>();
 
-  const onSubmit = (data: FormData) => {
-    // Handle form submission
-    console.log(data);
-  };
+  const createUserMutation = useMutation(async (formData: FormData) => {
+    const response = await fetch('http://localhost:3333/creditors/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ...formData }),
+    });
 
+    if (!response.ok) {
+      throw new Error('Failed to create user');
+    }
+  });
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      await createUserMutation.mutateAsync(data);
+      console.log('User created successfully!');
+    } catch (error) {
+      console.error('Failed to create user:', error);
+    }
+  };
   return (
     <div className="flex">
       <div className="bg-white w-96 h-96 p-8 rounded-md shadow-md">
@@ -26,39 +45,57 @@ const CreateCreditorForm: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
             <label
-              htmlFor="firstName"
+              htmlFor="name"
               className="block text-sm font-medium text-gray-700"
             >
-              First Name
+              Name
             </label>
             <input
               type="text"
-              id="firstName"
-              {...register('firstName', { required: 'First Name is required' })}
+              id="name"
+              {...register('name', { required: ' Name is required' })}
               className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
             />
-            {errors.firstName && (
+            {errors.name && (
+              <p className="mt-2 text-sm text-red-500">{errors.name.message}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="address"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Address
+            </label>
+            <input
+              type="text"
+              id="address"
+              {...register('address', { required: 'Last Name is required' })}
+              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
+            {errors.address && (
               <p className="mt-2 text-sm text-red-500">
-                {errors.firstName.message}
+                {errors.address.message}
               </p>
             )}
           </div>
           <div className="mb-4">
             <label
-              htmlFor="lastName"
+              htmlFor="phone"
               className="block text-sm font-medium text-gray-700"
             >
-              Last Name
+              Phone
             </label>
             <input
               type="text"
-              id="lastName"
-              {...register('lastName', { required: 'Last Name is required' })}
+              id="phone"
+              {...register('phone', { required: 'Last Name is required' })}
               className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
             />
-            {errors.lastName && (
+            {errors.phone && (
               <p className="mt-2 text-sm text-red-500">
-                {errors.lastName.message}
+                {errors.phone.message}
               </p>
             )}
           </div>

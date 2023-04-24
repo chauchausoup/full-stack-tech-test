@@ -11,7 +11,7 @@ dependencies:
     specifier: ^1.2.2
     version: 1.2.2(@nestjs/common@9.3.9)(class-validator@0.14.0)(reflect-metadata@0.1.13)
   '@nestjs/platform-express':
-    specifier: ^9.0.0
+    specifier: ^9.3.9
     version: 9.3.9(@nestjs/common@9.3.9)(@nestjs/core@9.3.9)
   '@nestjs/swagger':
     specifier: ^6.3.0

@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { MyContext } from '../context/AppContext';
 
-const CreditorTable = ({ creditors }) => {
+const CreditorTable = () => {
+  const { myState } = useContext(MyContext);
+
   return (
     <div className="bg-white w-96 h-96 p-8 rounded-md shadow-md">
       <h1 className="text-2xl font-bold mb-4">Creditor List</h1>
@@ -16,10 +19,10 @@ const CreditorTable = ({ creditors }) => {
           </tr>
         </thead>
         <tbody>
-          {creditors?.map((creditor) => (
+          {myState?.creditors?.map((creditor) => (
             <tr key={creditor.id} className="border-b border-gray-200">
               <td className="px-4 py-2 text-left text-gray-700">
-                {creditor.name}
+                {creditor.creditor.name}
               </td>
               <td className="px-4 py-2 text-right text-gray-700">
                 {creditor.amount_owned}

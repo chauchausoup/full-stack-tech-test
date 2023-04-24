@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-
 import { MyContext } from '../context/AppContext';
 
 const UserDropdown = () => {
@@ -47,9 +46,65 @@ const UserDropdown = () => {
   };
 
   const handleFormCompletion = () => {
-    console.log('Form completed:', creditorData);
+    console.log('Form completed:', creditorData, selectedUser);
+
     setSelectedUser(null);
     setCreditorData([]);
+  };
+
+  // {
+  // 	"id": 1,
+  // 		"creditor": {
+  // 		"id": 1,
+  // 			"name": "string",
+  // 				"address": "string",
+  // 					"email": "string@asd.com",
+  // 						"phone": "123"
+  // 	},
+  // 	"amount_owned": 555
+  // }
+
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+
+    setSelectedUser(null);
+    setCreditorData([]);
+
+    try {
+      // Send PUT request to update user's creditor information
+      const response = await fetch(
+        `http://localhost:3333/users/${selectedUser.id}/creditor`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: Date.now(),
+            creditor: {
+              id: creditorData[0].id,
+              name: creditorData[0].name,
+              address: creditorData[0].address,
+              email: creditorData[0].email,
+              phone: creditorData[0].phone,
+            },
+            amount_owned: creditorData[0].amount_owned,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        console.log('User creditor information updated successfully!');
+        console.log(response, 'resss');
+      } else {
+        console.error(
+          'Failed to update user creditor information:',
+          response.statusText
+        );
+      }
+    } catch (error) {
+      console.error('Failed to update user creditor information:', error);
+    }
   };
 
   return (
@@ -110,7 +165,7 @@ const UserDropdown = () => {
             </tbody>
           </table>
 
-          <button onClick={handleFormCompletion}>Complete Form</button>
+          <button onClick={handleFormSubmit}>Complete Form</button>
         </div>
       )}
     </div>

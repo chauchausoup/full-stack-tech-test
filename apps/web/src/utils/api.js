@@ -62,7 +62,7 @@ export const createUser = async (userData) => {
 
 export const createCreditor = async (userData) => {
   try {
-    const response = await api.post('/creditor', userData);
+    const response = await api.post('/creditors', userData);
     return response.data;
   } catch (error) {
     throw new Error(

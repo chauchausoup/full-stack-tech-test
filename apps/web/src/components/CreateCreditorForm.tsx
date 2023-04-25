@@ -1,6 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
+import { createCreditor } from '../utils/api';
 
 interface FormData {
   name: string;
@@ -17,15 +18,9 @@ const CreateCreditorForm: React.FC = () => {
   } = useForm<FormData>();
 
   const createUserMutation = useMutation(async (formData: FormData) => {
-    const response = await fetch('http://localhost:3333/creditors/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ...formData }),
-    });
+    const response = createCreditor(formData);
 
-    if (!response.ok) {
+    if (!response) {
       throw new Error('Failed to create user');
     }
   });

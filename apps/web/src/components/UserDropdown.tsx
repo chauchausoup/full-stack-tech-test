@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { MyContext } from '../context/AppContext';
+import { updateUserCreditors } from '../utils/api';
 
 const UserDropdown = () => {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -51,28 +52,11 @@ const UserDropdown = () => {
 
     try {
       // Send PUT request to update user's creditor information
-      const response = await fetch(
-        `http://localhost:3333/users/${selectedUser.id}/creditor`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            id: Date.now(),
-            creditor: {
-              id: creditorData[0].id,
-              name: creditorData[0].name,
-              address: creditorData[0].address,
-              email: creditorData[0].email,
-              phone: creditorData[0].phone,
-            },
-            amount_owned: creditorData[0].amount_owned,
-          }),
-        }
-      );
+      const response = await updateUserCreditors(selectedUser.id, creditorData);
 
-      if (response.ok) {
+      console.log(response, 'Resss');
+
+      if (response.status === 200) {
         console.log('User creditor information updated successfully!');
         console.log(response, 'resss');
       } else {

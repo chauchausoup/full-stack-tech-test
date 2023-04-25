@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getCreditors, getUsersWithCreditors } from '../utils/api';
 
 // Define the type for your state
 
@@ -54,24 +55,18 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response1 = await fetch(
-          'http://localhost:3333/usersWithCreditors'
-        );
+        const usersWithCreditors = await getUsersWithCreditors();
+        const creditors = await getCreditors();
 
-        const data1 = await response1.json();
-
-        const response2 = await fetch('http://localhost:3333/creditors');
-
-        const data2 = await response2.json();
-
+        console.log(usersWithCreditors, creditors, '121212');
         setMyState((prevState) => ({
           ...prevState,
-          usersWithCreditors: data1,
+          usersWithCreditors: usersWithCreditors,
         }));
 
         setMyState((prevState) => ({
           ...prevState,
-          hyperCreditors: data2,
+          hyperCreditors: creditors,
         }));
 
         // Update the context state with the fetched data

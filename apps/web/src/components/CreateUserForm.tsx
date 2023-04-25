@@ -1,6 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
+import { createUser } from '../utils/api';
 
 interface CreateUserFormData {
   first_name: string;
@@ -17,15 +18,9 @@ const CreateUserForm: React.FC = () => {
 
   const createUserMutation = useMutation(
     async (formData: CreateUserFormData) => {
-      const response = await fetch('http://localhost:3333/users/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...formData }),
-      });
+      const response = createUser(formData);
 
-      if (!response.ok) {
+      if (!response) {
         throw new Error('Failed to create user');
       }
     }
